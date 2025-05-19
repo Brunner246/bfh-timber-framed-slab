@@ -6,9 +6,9 @@ import element_controller as ec
 import geometry_controller as gc
 import visualization_controller as vc
 
-def filter_slab_element_id(elements: List[int]) -> int:
+def filter_slab_element_ids(elements: List[int]) -> List[int]:
     # raise NotImplementedError()
-    return next(filter(lambda x: ac.get_element_type(x).is_floor(), elements), None)
+    return list(filter(lambda x: ac.get_element_type(x).is_floor(), elements))
 
 
 def move_point(point: cadwork.point_3d, direction_vector: cadwork.point_3d,
