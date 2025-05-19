@@ -102,13 +102,15 @@ def set_ifc_type(elements: List[int], ifc_entity_name: str):
     """Hook to overwrite the ifc type of an element"""
 
     import bim_controller as bc
-    ifc_type = cadwork.ifc_2x3_element_type()
+    if len(elements) == 0:
+        return
+    ifc_type = bc.get_ifc2x3_element_type(elements[0]) # we need to get the type of a single element
     if ifc_entity_name == "IfcMember":
         ifc_type.set_ifc_member()
     #TODO: elif.. else
 
 
-    bc.set_ifc2x3_element_type(elements, ifc_type)
+    # bc.set_ifc2x3_element_type(elements, ifc_type)
 
     return
 
