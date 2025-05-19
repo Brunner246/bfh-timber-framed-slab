@@ -75,3 +75,8 @@ def create_rectangular_beam(start_point: cadwork.point_3d, end_point: cadwork.po
 def set_color(elements: List[int], color: int):
     vc.set_color(elements, color)
     # raise NotImplementedError()
+
+
+def set_name(elements: List[int], name: str):
+    ac.set_name(elements, name)
+    # raise NotImplementedError()

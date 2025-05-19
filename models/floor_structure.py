@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import cadwork
 
-from cad_adapter.adapter_api_wrappers import move_point, create_node, create_rectangular_beam
+from cad_adapter.adapter_api_wrappers import move_point, create_node, create_rectangular_beam, get_element_zl
 from .floor_structure_config import FloorStructureConfig
 from .slab import map_slab_data, Slab
 
@@ -64,7 +64,9 @@ class FloorStructure:
 
         return points_start_edge, points_end_edge
 
-    def calculate_extreme_edge_points(self, edge_points: List[cadwork.point_3d]):
+    @staticmethod
+    def calculate_extreme_edge_points(edge_points: List[cadwork.point_3d]) -> Tuple[
+        cadwork.point_3d, cadwork.point_3d]:
         min_point = min(edge_points, key=lambda p: (p.x ** 2 + p.y ** 2 + p.z ** 2))
         max_point = max(edge_points, key=lambda p: (p.x ** 2 + p.y ** 2 + p.z ** 2))
 
@@ -72,16 +74,10 @@ class FloorStructure:
 
     def create_beam(self, start_point: cadwork.point_3d, end_point: cadwork.point_3d, width: float,
                     height: float) -> int:
-        beam_span_vector = (cadwork.point_3d(start_point.x - end_point.x,
-                                             start_point.y - end_point.y,
-                                             start_point.z - end_point.z).normalized())
-        slab_length_vector = self.slab_element.axis_local_length_direction
-        cross_product = beam_span_vector.cross(slab_length_vector)
-        print(f"Cross product: {cross_product}")
         return create_rectangular_beam(start_point, end_point,
                                        width,
                                        height,
-                                       cross_product)  # get_element_zl(self.slab_element_id)
+                                       get_element_zl(self.slab_element_id))
 
     def _create_beam_distribution_points(self, slab_element: Slab, beam_width: float):
         move_vector_start_edge = slab_element.axis_local_width_direction * -1.
@@ -104,7 +100,7 @@ class FloorStructure:
         points_ref_edge = compute_beam_distribution_points(moved_start_point,
                                                            moved_end_point,
                                                            self.config.spacing)
-        points_ref_edge.append(moved_end_point) # we need to add the last point for the closing beam
+        points_ref_edge.append(moved_end_point)  # we need to add the last point for the closing beam
         points_opposite_edge = [move_point(point,
                                            slab_element.axis_local_width_direction,
                                            slab_element.slab_width) for point in points_ref_edge]

@@ -178,15 +178,9 @@ class TimberFrameApp:
     def _on_create_structure(self):
 
         spacing = self.beam_config.get_values()["spacing"]
-        beam_height = self.beam_config.get_values()["height"]
-        beam_width = self.beam_config.get_values()["width"]
-        beam_color = self.color_picker.get_values()["beam_color"]
-        beam_name = self.color_picker.get_values()["beam_name"]
+        beam_config = self._setup_beam_config()
         structure_config = FloorStructureConfig(spacing=spacing,
-                                                beam_config=BeamConfig(height=beam_height,
-                                                                       width=beam_width,
-                                                                       color=beam_color,
-                                                                       name=beam_name))
+                                                beam_config=beam_config)
 
         self.view_model.set_config(structure_config)
         result = self.view_model.create_structure()
@@ -194,6 +188,15 @@ class TimberFrameApp:
             self._set_status("Structure created successfully.")
         else:
             self._set_status("Failed to create structure.")
+
+    def _setup_beam_config(self):
+        beam_height = self.beam_config.get_values()["height"]
+        beam_width = self.beam_config.get_values()["width"]
+        beam_color = self.color_picker.get_values()["beam_color"]
+        beam_name = self.color_picker.get_values()["beam_name"]
+        return BeamConfig(height=beam_height, width=beam_width,
+                          color=beam_color,
+                          name=beam_name)
 
     @staticmethod
     def _show_documentation():

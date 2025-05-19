@@ -1,6 +1,6 @@
 from typing import List
 
-from cad_adapter.adapter_api_wrappers import get_active_elements, filter_slab_element_id, set_color
+from cad_adapter.adapter_api_wrappers import get_active_elements, filter_slab_element_id, set_color, set_name
 from models.floor_structure import FloorStructure
 from models.floor_structure_config import FloorStructureConfig, BeamConfig
 
@@ -16,26 +16,40 @@ class FloorController:
                 raise ValueError("No valid slab element found.")
             self.floor_structure = FloorStructure(slab_element_id, config)
             points_start_edge, points_end_edge = self.floor_structure.generate_beam_distribution_points()
-            structure_1_start, structure_2_end = self.floor_structure.calculate_extreme_edge_points(points_start_edge)
+            structure_1_start, structure_1_end = self.floor_structure.calculate_extreme_edge_points(points_start_edge)
+            structure_2_start, structure_2_end = self.floor_structure.calculate_extreme_edge_points(points_end_edge)
 
-            beam_ids = self._create_beam_structure(config, points_end_edge, points_start_edge,
-                                        structure_1_start, structure_2_end)
+            self._create_beams_with_attributes(config, points_end_edge,
+                                               points_start_edge, structure_1_end,
+                                               structure_1_start, structure_2_end,
+                                               structure_2_start)
 
-            set_color(beam_ids, config.beam_config.color)
-
-            # beams = [self.floor_structure.create_beam(distribution_points) for ]
             return self.floor_structure.generate_structure()
         except Exception as e:
             print(f"Error creating floor structure: {e}")
             return False
 
-    def _create_beam_structure(self, config, points_end_edge, points_start_edge, structure_1_start, structure_2_end) -> \
-    List[int]:
+    def _create_beams_with_attributes(self, config, points_end_edge, points_start_edge, structure_1_end,
+                                      structure_1_start, structure_2_end, structure_2_start):
+        beam_ids = self._create_beam_structure(config, points_end_edge,
+                                               points_start_edge,
+                                               structure_1_start, structure_1_end,
+                                               structure_2_start, structure_2_end)
+        set_color(beam_ids, config.beam_config.color)
+        set_name(beam_ids, config.beam_config.name)
+
+    def _create_beam_structure(self, config, points_end_edge, points_start_edge,
+                               structure_1_start, structure_1_end, structure_2_start, structure_2_end) -> \
+            List[int]:
         beam_ids = self._create_secondary_beam_structure(config.beam_config, points_end_edge,
                                                          points_start_edge)
-        beam_id = self._create_primary_beam_structure(config.beam_config, structure_1_start,
-                                                      structure_2_end)
-        beam_ids.append(beam_id)
+
+        beam_id_ref = self._create_primary_beam_structure(config.beam_config, structure_1_start,
+                                                          structure_1_end)
+        beam_id_op = self._create_primary_beam_structure(config.beam_config, structure_2_start,
+                                                         structure_2_end)
+        beam_ids.append(beam_id_ref)
+        beam_ids.append(beam_id_op)
         return beam_ids
 
     def _create_primary_beam_structure(self, config: BeamConfig, structure_1_start, structure_2_end) -> int:
