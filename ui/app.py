@@ -29,7 +29,6 @@ class TimberFrameApp:
 
         self._setup_window()
         self._create_styles()
-        self._create_menu()
         self._create_main_frame()
         self._create_status_bar()
 
