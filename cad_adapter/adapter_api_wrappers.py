@@ -3,7 +3,7 @@ from typing import List
 import cadwork
 
 
-def filter_slab_element_id(elements: List[int]) -> int:
+def filter_slab_element_ids(elements: List[int]) -> List[int]:
     raise NotImplementedError()
 
 
