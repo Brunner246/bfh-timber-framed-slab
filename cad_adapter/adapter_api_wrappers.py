@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Set
 
 import attribute_controller as ac
 import cadwork
 import element_controller as ec
 import geometry_controller as gc
 import visualization_controller as vc
+
 
 def filter_slab_element_ids(elements: List[int]) -> List[int]:
     # raise NotImplementedError()
@@ -13,7 +14,7 @@ def filter_slab_element_ids(elements: List[int]) -> List[int]:
 
 def move_point(point: cadwork.point_3d, direction_vector: cadwork.point_3d,
                distance: float) -> cadwork.point_3d:
-    new_point = point + direction_vector * distance
+    new_point = point + (direction_vector * distance)
     return new_point
     # raise NotImplementedError()
 
@@ -42,9 +43,11 @@ def get_element_p2(element_id: int) -> cadwork.point_3d:
     return gc.get_p2(element_id)
     # raise NotImplementedError()
 
+
 def get_element_p3(element_id: int) -> cadwork.point_3d:
     return gc.get_p3(element_id)
     # raise NotImplementedError()
+
 
 def get_element_yl(element_id: int) -> cadwork.point_3d:
     return gc.get_yl(element_id)
@@ -65,8 +68,7 @@ def create_rectangular_beam(start_point: cadwork.point_3d, end_point: cadwork.po
                             height: float,
                             height_axis_orientation: cadwork.point_3d
                             ) -> int:
-
-    #TODO: implement creation of beam. p3 is e.g. start point + direction
+    # TODO: implement creation of beam. p3 is e.g. start point + direction
 
     return ec.create_rectangular_beam_points(width,
                                              height,
@@ -75,14 +77,16 @@ def create_rectangular_beam(start_point: cadwork.point_3d, end_point: cadwork.po
                                              start_point + height_axis_orientation)
     # raise NotImplementedError())
 
+
 def create_rectangular_panel(width: float, thickness: float, p1: cadwork.point_3d,
                              p2: cadwork.point_3d, p3: cadwork.point_3d) -> int:
     return ec.create_rectangular_panel_points(width,
-                                                  thickness,
-                                                  p1,
-                                                  p2,
-                                                  p3)
+                                              thickness,
+                                              p1,
+                                              p2,
+                                              p3)
     # raise NotImplementedError()
+
 
 def set_color(elements: List[int], color: int):
     vc.set_color(elements, color)
@@ -92,3 +96,22 @@ def set_color(elements: List[int], color: int):
 def set_name(elements: List[int], name: str):
     ac.set_name(elements, name)
     # raise NotImplementedError()
+
+
+def set_ifc_type(elements: List[int], ifc_entity_name: str):
+    """Hook to overwrite the ifc type of an element"""
+
+    import bim_controller as bc
+    ifc_type = cadwork.ifc_2x3_element_type()
+    if ifc_entity_name == "IfcMember":
+        ifc_type.set_ifc_member()
+    #TODO: elif.. else
+
+
+    bc.set_ifc2x3_element_type(elements, ifc_type)
+
+    return
+
+def set_subgroup(elements: List[int]):
+    #TODO: implement subgroup attribute
+    pass

@@ -3,7 +3,7 @@ from typing import List, Tuple
 import cadwork
 
 from cad_adapter.adapter_api_wrappers import move_point, create_rectangular_beam, get_element_zl, \
-    set_color, set_name, create_rectangular_panel
+    set_color, set_name, create_rectangular_panel, set_ifc_type, set_subgroup
 from .beam_geometry import calculate_primary_beam_points
 from .floor_structure_config import FloorStructureConfig, BeamConfig
 from .geom_utils import calculate_extreme_min_point, calculate_extreme_max_point, normalize_vector, \
@@ -14,8 +14,8 @@ from .slab import setup_slab_data, Slab
 class FloorStructure:
 
     def __init__(self, slab_element: int, config: FloorStructureConfig):
-        self.slab_element_id = slab_element
-        self.config = config
+        self._slab_element_id = slab_element
+        self._config = config
         self._slab_element = setup_slab_data(slab_element)
 
     @property
@@ -24,7 +24,7 @@ class FloorStructure:
 
     def _generate_beam_distribution_points(self) -> Tuple[List[cadwork.point_3d], List[cadwork.point_3d]]:
         points_start_edge, points_end_edge = self._create_beam_distribution_points(self._slab_element,
-                                                                                   self.config.beam_config.width)
+                                                                                   self._config.beam_config.width)
         # TODO visualize the points
         # [create_node(p) for p in [*points_end_edge, *points_start_edge]]
         return points_start_edge, points_end_edge
@@ -37,12 +37,12 @@ class FloorStructure:
 
         return min_point, max_point
 
-    def create_beam(self, start_point: cadwork.point_3d, end_point: cadwork.point_3d, width: float,
-                    height: float) -> int:
+    def _create_beam(self, start_point: cadwork.point_3d, end_point: cadwork.point_3d, width: float,
+                     height: float) -> int:
         return create_rectangular_beam(start_point, end_point,
                                        width,
                                        height,
-                                       get_element_zl(self.slab_element_id))
+                                       get_element_zl(self._slab_element_id))
 
     def _create_beam_distribution_points(self, slab_element: Slab, beam_width: float):
         move_vector_start_edge = slab_element.axis_local_width_direction * -1.
@@ -62,7 +62,7 @@ class FloorStructure:
 
         points_ref_edge = compute_beam_distribution_points(moved_start_point,
                                                            moved_end_point,
-                                                           self.config.spacing)
+                                                           self._config.spacing)
         points_ref_edge.append(moved_end_point)  # we need to add the last point for the closing beam
         points_opposite_edge = [move_point(point,
                                            slab_element.axis_local_width_direction,
@@ -75,13 +75,24 @@ class FloorStructure:
         structure_1_start, structure_1_end = self._calculate_extreme_edge_points(points_start_edge)
         structure_2_start, structure_2_end = self._calculate_extreme_edge_points(points_end_edge)
 
-        self._create_beams_with_attributes(config, points_end_edge, points_start_edge,
-                                           structure_1_end,
-                                           structure_1_start, structure_2_end,
-                                           structure_2_start)
+        beam_element_ids = self._create_beams_with_attributes(config, points_end_edge, points_start_edge,
+                                                              structure_1_end,
+                                                              structure_1_start, structure_2_end,
+                                                              structure_2_start)
 
-        self._create_top_panel_with_attributes(config)
-        self._create_bottom_panel_with_attributes(config)
+        top_panel_id = self._create_top_panel_with_attributes(config)
+        bottom_panel_id = self._create_bottom_panel_with_attributes(config)
+
+        _created_element_ids = []
+        _created_element_ids.extend(beam_element_ids)
+        _created_element_ids.append(top_panel_id)
+        _created_element_ids.append(bottom_panel_id)
+
+        self._set_ifc_types(beam_element_ids, "IfcMember")
+        self._set_ifc_types([top_panel_id], "IfcPlate")
+        self._set_ifc_types([bottom_panel_id], "IfcCovering")
+
+        self._set_sub_group(_created_element_ids)
 
         return True
 
@@ -91,15 +102,29 @@ class FloorStructure:
 
         return volume
 
+    @staticmethod
+    def _set_ifc_types(element_ids: List[int], ifc_type: str):
+        """Hook to set the IFC type of the elements."""
+        set_ifc_type(element_ids, ifc_type)
+
+    @staticmethod
+    def _set_sub_group(element_ids: List[int]):
+        """Hook to set the IFC type of the elements."""
+        set_subgroup(element_ids)
+
     def _create_bottom_panel_with_attributes(self, config):
         panel_id = self._create_bottom_panel(config)
         set_color([panel_id], config.bottom_panel_config.color)
         set_name([panel_id], config.bottom_panel_config.name)
 
+        return panel_id
+
     def _create_top_panel_with_attributes(self, config):
         panel_id = self._create_top_panel(config)
         set_color([panel_id], config.top_panel_config.color)
         set_name([panel_id], config.top_panel_config.name)
+
+        return panel_id
 
     def _create_top_panel(self, config):
         panel_thickness = config.top_panel_config.thickness
@@ -139,8 +164,11 @@ class FloorStructure:
                                                points_start_edge,
                                                structure_1_start, structure_1_end,
                                                structure_2_start, structure_2_end)
+
         set_color(beam_ids, config.beam_config.color)
         set_name(beam_ids, config.beam_config.name)
+
+        return beam_ids
 
     def _create_beam_structure(self, config, points_end_edge, points_start_edge,
                                structure_1_start, structure_1_end, structure_2_start, structure_2_end) -> \
@@ -172,16 +200,16 @@ class FloorStructure:
         return beam_id_op, beam_id_ref
 
     def _create_primary_beam_structure(self, config: BeamConfig, structure_1_start, structure_2_end) -> int:
-        return self.create_beam(structure_1_start, structure_2_end,
-                                config.width,
-                                config.height)
+        return self._create_beam(structure_1_start, structure_2_end,
+                                 config.width,
+                                 config.height)
 
     def _create_secondary_beam_structure(self, config: BeamConfig, points_end_edge, points_start_edge) -> List[int]:
         beam_ids = []
         if len(points_start_edge) != len(points_end_edge):
             raise ValueError("Start and end points must have the same length.")
         for start_pt, end_pt in zip(points_start_edge, points_end_edge):
-            beam_ids.append(self.create_beam(start_pt, end_pt,
-                                             config.width,
-                                             config.height))
+            beam_ids.append(self._create_beam(start_pt, end_pt,
+                                              config.width,
+                                              config.height))
         return beam_ids
