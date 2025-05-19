@@ -124,7 +124,7 @@ class ColorPickerFrame(ttk.Frame):
         hex_color = ColorPickerFrame._cw_color_nr_to_rgb(color_nr)
         color_int_var.set(color_nr)
         color_bg_var.set(hex_color)
-        color_frame._config(bg=hex_color)
+        color_frame.config(bg=hex_color)
 
     @staticmethod
     def _cw_color_nr_to_rgb(color_nr):
