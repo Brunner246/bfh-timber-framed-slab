@@ -1,9 +1,10 @@
 from typing import List
 
 from cad_adapter.adapter_api_wrappers import get_active_elements, filter_slab_element_id, set_color, set_name
-from models.floor_structure import FloorStructure
+from models.floor_structure import FloorStructure, normalize_vector
 from models.floor_structure_config import FloorStructureConfig, BeamConfig
 
+import cadwork
 
 class FloorController:
     def __init__(self):
@@ -43,11 +44,17 @@ class FloorController:
             List[int]:
         beam_ids = self._create_secondary_beam_structure(config.beam_config, points_end_edge,
                                                          points_start_edge)
-
-        beam_id_ref = self._create_primary_beam_structure(config.beam_config, structure_1_start,
-                                                          structure_1_end)
-        beam_id_op = self._create_primary_beam_structure(config.beam_config, structure_2_start,
-                                                         structure_2_end)
+        direction_vector: cadwork.point_3d = normalize_vector(structure_1_end, structure_1_start)
+        move_vector_pos = direction_vector * config.beam_config.width * .5
+        move_vector_neg = direction_vector * config.beam_config.width * .5 * -1
+        print(f"{move_vector_pos=}")
+        print(f"{move_vector_neg=}")
+        beam_id_ref = self._create_primary_beam_structure(config.beam_config,
+                                                          structure_1_start + move_vector_pos,
+                                                          structure_1_end + move_vector_neg)
+        beam_id_op = self._create_primary_beam_structure(config.beam_config,
+                                                         structure_2_start + move_vector_pos,
+                                                         structure_2_end + move_vector_neg)
         beam_ids.append(beam_id_ref)
         beam_ids.append(beam_id_op)
         return beam_ids

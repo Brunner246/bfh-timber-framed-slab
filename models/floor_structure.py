@@ -55,13 +55,11 @@ class FloorStructure:
         self.slab_element = map_slab_data(slab_element)
 
     def generate_beam_distribution_points(self) -> Tuple[List[cadwork.point_3d], List[cadwork.point_3d]]:
-        # TODO maybe cleaner to have two separate methods for start and end edge
         points_start_edge, points_end_edge = self._create_beam_distribution_points(self.slab_element,
                                                                                    self.config.beam_config.width)
-        print(f"Start edge points: {points_start_edge}")
-        print(f"End edge points: {points_end_edge}")
-        [create_node(p) for p in [*points_end_edge, *points_start_edge]]
 
+        # TODO visualize the points
+        # [create_node(p) for p in [*points_end_edge, *points_start_edge]]
         return points_start_edge, points_end_edge
 
     @staticmethod
@@ -93,9 +91,10 @@ class FloorStructure:
                                      move_vector_start_edge,
                                      move_distance)
 
-        # vector_start_to_end = normalize_vector(moved_end_point, moved_start_point) #TODO
-        # moved_start_point = moved_start_point + vector_start_to_end * (beam_width * .5)
-        # moved_end_point = moved_end_point + vector_start_to_end * (beam_width * .5)
+        vector_start_to_end = normalize_vector(moved_start_point, moved_end_point)
+        print(f"Vector start to end: {vector_start_to_end}")
+        moved_start_point = moved_start_point + vector_start_to_end * (beam_width * .5)
+        moved_end_point = moved_end_point - vector_start_to_end * (beam_width * .5)
 
         points_ref_edge = compute_beam_distribution_points(moved_start_point,
                                                            moved_end_point,
@@ -105,7 +104,7 @@ class FloorStructure:
                                            slab_element.axis_local_width_direction,
                                            slab_element.slab_width) for point in points_ref_edge]
 
-        return (points_ref_edge, points_opposite_edge)
+        return points_ref_edge, points_opposite_edge
 
     def generate_structure(self) -> bool:
         # TODO: Implement the logic to create beams and boards
