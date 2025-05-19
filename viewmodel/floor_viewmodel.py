@@ -1,5 +1,5 @@
-from models.floor_structure import FloorStructure
 from models.floor_structure_config import FloorStructureConfig
+
 
 class FloorViewModel:
     def __init__(self, controller):
@@ -13,5 +13,4 @@ class FloorViewModel:
         if not self.config:
             raise ValueError("Configuration not set.")
         result = self.controller.create_floor_structure(self.config)
-        status = "Structure created successfully." if result else "Failed to create structure."
         return result

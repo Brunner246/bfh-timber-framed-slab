@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-import cadwork
 
 @dataclass(frozen=True, slots=True)
 class BeamConfig:

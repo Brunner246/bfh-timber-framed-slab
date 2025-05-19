@@ -4,15 +4,15 @@ DEFAULT_CONFIG = {
         "width": 80,       # mm
         "height": 240,     # mm
         "spacing": 600,    # mm
-        "color": 1 # "#8B4513"  # SaddleBrown
+        "color": 1
     },
     "top_board": {
         "thickness": 22,   # mm
-        "color": 1 #"#DEB887"  # BurlyWood
+        "color": 1
     },
     "bottom_board": {
         "thickness": 22,   # mm
-        "color": 1 #"#DEB887"  # BurlyWood
+        "color": 1
     },
     "element_names": {
         "beam": "Beam",

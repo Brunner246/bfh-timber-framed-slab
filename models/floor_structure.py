@@ -1,15 +1,14 @@
-import math
 from typing import List, Tuple
 
 import cadwork
 
-from cad_adapter.adapter_api_wrappers import move_point, create_node, create_rectangular_beam, get_element_zl, \
-    get_active_elements, filter_slab_element_id, set_color, set_name, create_rectangular_panel
+from cad_adapter.adapter_api_wrappers import move_point, create_rectangular_beam, get_element_zl, \
+    set_color, set_name, create_rectangular_panel
 from .beam_geometry import calculate_primary_beam_points
 from .floor_structure_config import FloorStructureConfig, BeamConfig
 from .geom_utils import calculate_extreme_min_point, calculate_extreme_max_point, normalize_vector, \
     compute_beam_distribution_points
-from .slab import map_slab_data, Slab
+from .slab import setup_slab_data, Slab
 
 
 class FloorStructure:
@@ -17,7 +16,7 @@ class FloorStructure:
     def __init__(self, slab_element: int, config: FloorStructureConfig):
         self.slab_element_id = slab_element
         self.config = config
-        self._slab_element = map_slab_data(slab_element)
+        self._slab_element = setup_slab_data(slab_element)
 
     @property
     def slab_element(self) -> Slab:
@@ -72,10 +71,6 @@ class FloorStructure:
         return points_ref_edge, points_opposite_edge
 
     def generate_structure(self, config: FloorStructureConfig) -> bool:
-        # slab_element_id = self._filter_slab_element_id_from_elements()
-        # if slab_element_id is None:
-        #     raise ValueError("No valid slab element found.")
-        # self.floor_structure = FloorStructure(slab_element_id, config)
         points_start_edge, points_end_edge = self._generate_beam_distribution_points()
         structure_1_start, structure_1_end = self._calculate_extreme_edge_points(points_start_edge)
         structure_2_start, structure_2_end = self._calculate_extreme_edge_points(points_end_edge)
@@ -88,17 +83,13 @@ class FloorStructure:
         self._create_top_panel_with_attributes(config)
         self._create_bottom_panel_with_attributes(config)
 
+        return True
+
     def get_total_volume(self):
         # TODO: Calculate the total volume of the floor structure.
         volume = 0.0
 
         return volume
-
-    # @staticmethod
-    # def _filter_slab_element_id_from_elements():
-    #     elements = get_active_elements()
-    #     slab_element_id = filter_slab_element_id(elements)
-    #     return slab_element_id
 
     def _create_bottom_panel_with_attributes(self, config):
         panel_id = self._create_bottom_panel(config)
@@ -182,8 +173,8 @@ class FloorStructure:
 
     def _create_primary_beam_structure(self, config: BeamConfig, structure_1_start, structure_2_end) -> int:
         return self.create_beam(structure_1_start, structure_2_end,
-                                                config.width,
-                                                config.height)
+                                config.width,
+                                config.height)
 
     def _create_secondary_beam_structure(self, config: BeamConfig, points_end_edge, points_start_edge) -> List[int]:
         beam_ids = []
@@ -191,6 +182,6 @@ class FloorStructure:
             raise ValueError("Start and end points must have the same length.")
         for start_pt, end_pt in zip(points_start_edge, points_end_edge):
             beam_ids.append(self.create_beam(start_pt, end_pt,
-                                                             config.width,
-                                                             config.height))
+                                             config.width,
+                                             config.height))
         return beam_ids

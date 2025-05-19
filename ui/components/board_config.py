@@ -1,7 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import sys
-import os
 
 from config import DEFAULT_CONFIG, UI_CONFIG
 
@@ -17,7 +15,7 @@ class BoardConfigFrame(ttk.LabelFrame):
         self.bottom_thickness_var = None
 
         self._create_widgets()
-    
+
     def _create_widgets(self):
         padding = UI_CONFIG["padding"]["default"]
 
@@ -74,7 +72,7 @@ class BoardConfigFrame(ttk.LabelFrame):
             "top_thickness": self.top_thickness_var.get(),
             "bottom_thickness": self.bottom_thickness_var.get()
         }
-    
+
     def set_values(self, top_thickness, bottom_thickness):
         self.top_thickness_var.set(top_thickness)
         self.bottom_thickness_var.set(bottom_thickness)

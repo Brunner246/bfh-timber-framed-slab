@@ -1,20 +1,19 @@
 import tkinter as tk
 from tkinter import ttk
-import sys
-import os
 
 from config import DEFAULT_CONFIG, UI_CONFIG
+
 
 class BeamConfigFrame(ttk.LabelFrame):
     def __init__(self, parent):
         super().__init__(parent, text="Beam Configuration", padding=UI_CONFIG["padding"]["default"])
-        
+
         # Get default values from configuration
         self.beam_defaults = DEFAULT_CONFIG["beam"]
-        
+
         # Create input fields
         self._create_widgets()
-    
+
     def _create_widgets(self):
         """Create the input widgets for beam configuration."""
         padding = UI_CONFIG["padding"]["default"]
@@ -91,7 +90,7 @@ class BeamConfigFrame(ttk.LabelFrame):
             "height": self.beam_height_var.get(),
             "spacing": self.beam_spacing_var.get()
         }
-    
+
     def set_values(self, width, height, spacing):
         """
         Set the values of the beam configuration.

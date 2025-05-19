@@ -29,7 +29,7 @@ class Slab:
         )
 
 
-def map_slab_data(slab_element_id: int) -> Slab:
+def setup_slab_data(slab_element_id: int) -> Slab:
     slab: Slab = Slab(
         element_id=slab_element_id,
         slab_width=api_wrappers.get_element_width(slab_element_id),

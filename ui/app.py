@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Main application window for the Timber Frame Construction application.
-"""
 import os
 import sys
 import tkinter as tk
@@ -50,7 +45,6 @@ class TimberFrameApp:
         """Create ttk styles for the application."""
         self.style = ttk.Style()
 
-        # Use the main theme color
         theme_color = UI_CONFIG["window"]["theme_color"]
         self._configure_styles_for_widgets(theme_color)
 
@@ -72,49 +66,23 @@ class TimberFrameApp:
 
         self._create_title_label_main_frame(padding)
 
-        # Create a notebook for tabbed interface
-        self.notebook = ttk.Notebook(self.main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
+        self._setup_notebook_tabbed_interface()
+        self._setup_configuration_tab(padding)
+        left_frame = self._setup_left_and_right_panes_in_config_tab(padding)
 
-        # Configuration tab
-        self.config_tab = ttk.Frame(self.notebook, padding=padding)
-        self.notebook.add(self.config_tab, text="Configuration")
+        right_frame = self._setup_right_frame(padding)
 
-        # Create left and right panes in configuration tab
-        left_frame = ttk.Frame(self.config_tab)
-        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, padding))
+        self._setup_beam_config_in_left_frame(left_frame)
+        self._setup_beam_config_in_right_frame(right_frame)
 
-        right_frame = ttk.Frame(self.config_tab)
-        right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(padding, 0))
+        self._setup_color_picker_tab(padding)
+        self._setup_color_picker()
 
-        # Beam configuration in left frame
-        self.beam_config = BeamConfigFrame(left_frame)
-        self.beam_config.pack(fill=tk.BOTH, expand=True)
+        self._setup_buttons(padding)
 
-        # Board configuration in right frame
-        self.board_config = BoardConfigFrame(right_frame)
-        self.board_config.pack(fill=tk.BOTH, expand=True)
-
-        # Color picker tab
-        self.color_tab = ttk.Frame(self.notebook, padding=padding)
-        self.notebook.add(self.color_tab, text="Colors & Names")
-
-        self.color_picker = ColorPickerFrame(self.color_tab)
-        self.color_picker.pack(fill=tk.BOTH, expand=True)
-
-        # Button frame at the bottom
+    def _setup_buttons(self, padding):
         button_frame = ttk.Frame(self.main_frame)
         button_frame.pack(fill=tk.X, pady=(padding, 0))
-
-        # Create and export buttons
-        self.create_button = ttk.Button(
-            button_frame,
-            text="Create Structure",
-            command=self._create_structure,
-            style="Primary.TButton"
-        )
-        self.create_button.pack(side=tk.RIGHT, padx=(padding, 0))
-
         self.export_button = ttk.Button(
             button_frame,
             text="Create",
@@ -122,12 +90,39 @@ class TimberFrameApp:
         )
         self.export_button.pack(side=tk.RIGHT, padx=(padding, 0))
 
-        self.import_button = ttk.Button(
-            button_frame,
-            text="Import from CAD",
-            command=lambda: print("Import from CAD")
-        )
-        self.import_button.pack(side=tk.RIGHT)
+    def _setup_color_picker(self):
+        self.color_picker = ColorPickerFrame(self.color_tab)
+        self.color_picker.pack(fill=tk.BOTH, expand=True)
+
+    def _setup_color_picker_tab(self, padding):
+        self.color_tab = ttk.Frame(self.notebook, padding=padding)
+        self.notebook.add(self.color_tab, text="Colors & Names")
+
+    def _setup_beam_config_in_right_frame(self, right_frame):
+        self.board_config = BoardConfigFrame(right_frame)
+        self.board_config.pack(fill=tk.BOTH, expand=True)
+
+    def _setup_beam_config_in_left_frame(self, left_frame):
+        self.beam_config = BeamConfigFrame(left_frame)
+        self.beam_config.pack(fill=tk.BOTH, expand=True)
+
+    def _setup_right_frame(self, padding):
+        right_frame = ttk.Frame(self.config_tab)
+        right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(padding, 0))
+        return right_frame
+
+    def _setup_left_and_right_panes_in_config_tab(self, padding):
+        left_frame = ttk.Frame(self.config_tab)
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, padding))
+        return left_frame
+
+    def _setup_configuration_tab(self, padding):
+        self.config_tab = ttk.Frame(self.notebook, padding=padding)
+        self.notebook.add(self.config_tab, text="Configuration")
+
+    def _setup_notebook_tabbed_interface(self):
+        self.notebook = ttk.Notebook(self.main_frame)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
 
     def _create_title_label_main_frame(self, padding):
         title_label = ttk.Label(
@@ -147,9 +142,6 @@ class TimberFrameApp:
             padding=(10, 2)
         )
         self.status_bar.pack(fill=tk.X, side=tk.BOTTOM)
-
-    def _create_structure(self):
-        pass
 
     def _on_create_structure(self):
 
