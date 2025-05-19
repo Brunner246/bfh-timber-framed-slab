@@ -1,9 +1,7 @@
 from typing import List
 
-import cadwork
-
-from cad_adapter.adapter_api_wrappers import get_active_elements, filter_slab_element_id, set_color, set_name, \
-    create_node
+from cad_adapter.adapter_api_wrappers import get_active_elements, filter_slab_element_id, set_color, set_name
+from models.beam_geometry import calculate_primary_beam_points
 from models.floor_structure import FloorStructure, normalize_vector
 from models.floor_structure_config import FloorStructureConfig, BeamConfig
 
@@ -58,35 +56,18 @@ class FloorController:
 
     def _create_primary_beams_structure(self, config, structure_1_end, structure_1_start, structure_2_end,
                                         structure_2_start):
-        direction_vector_length: cadwork.point_3d = normalize_vector(structure_1_end, structure_1_start)
-        direction_vector_width: cadwork.point_3d = normalize_vector(structure_2_end, structure_1_end)
-        structure_2_start += direction_vector_length * config.beam_config.width * .5
-        structure_2_end -= direction_vector_length * config.beam_config.width * .5
-        structure_2_start -= direction_vector_width * config.beam_config.width * .5
-        structure_2_end -= direction_vector_width * config.beam_config.width * .5
 
-        structure_1_start += direction_vector_length * config.beam_config.width * .5
-        structure_1_end -= direction_vector_length * config.beam_config.width * .5
-        structure_1_start += direction_vector_width * config.beam_config.width * .5
-        structure_1_end += direction_vector_width * config.beam_config.width * .5
+        s1_start, s1_end, s2_start, s2_end = calculate_primary_beam_points(structure_1_start,
+                                                                           structure_1_end,
+                                                                           structure_2_start,
+                                                                           structure_2_end,
+                                                                           config.beam_config.width)
 
+        beam_id_ref = self._create_primary_beam_structure(config.beam_config, s1_start, s1_end)
+        beam_id_op = self._create_primary_beam_structure(config.beam_config, s2_start, s2_end)
 
-        # structure_1_end += direction_vector_length * config.beam_config.width
-        # move_vector_pos = direction_vector_length * config.beam_config.width * .5
-        # move_vector_pos = move_vector_pos + direction_vector_width * config.beam_config.width * .5 * -1.
-        # move_vector_neg = direction_vector_length * config.beam_config.width * -1 * .5
-        # move_vector_neg = move_vector_neg + direction_vector_width * config.beam_config.width * .5
-        # print(f"{move_vector_pos=}")
-        # print(f"{move_vector_neg=}")
-        # create_node(structure_1_start + move_vector_pos * -1.)
-        # create_node(structure_2_start + move_vector_pos)
-        beam_id_ref = self._create_primary_beam_structure(config.beam_config,
-                                                          structure_1_start,  # + move_vector_pos * -1.,
-                                                          structure_1_end)  # ,# + move_vector_pos * -1.)
-        beam_id_op = self._create_primary_beam_structure(config.beam_config,
-                                                         structure_2_start,  # + move_vector_pos,
-                                                         structure_2_end)  # + move_vector_pos)
         return beam_id_op, beam_id_ref
+
 
     def _create_primary_beam_structure(self, config: BeamConfig, structure_1_start, structure_2_end) -> int:
         return self.floor_structure.create_beam(structure_1_start, structure_2_end,

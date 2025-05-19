@@ -68,7 +68,7 @@ class ColorPickerFrame(ttk.Frame):
         # Beam color
         ttk.Label(self, text="Beam Color:").grid(row=2, column=2, sticky=tk.W, pady=(0, padding))
         
-        self.beam_color_var = tk.StringVar(value=self.beam_defaults["color"])
+        self.beam_color_var = tk.StringVar(value=self._cw_color_nr_to_rgb(self.beam_defaults["color"]))
         self.beam_color_frame = tk.Frame(self, width=30, height=20, bg=self.beam_color_var.get())
         self.beam_color_frame.grid(row=2, column=3, sticky=tk.W, pady=(0, padding), padx=(0, padding))
         
@@ -82,7 +82,7 @@ class ColorPickerFrame(ttk.Frame):
         # Top board color
         ttk.Label(self, text="Top Board Color:").grid(row=3, column=2, sticky=tk.W, pady=(0, padding))
         
-        self.top_board_color_var = tk.StringVar(value=self.top_board_defaults["color"])
+        self.top_board_color_var = tk.StringVar(value=self._cw_color_nr_to_rgb(self.top_board_defaults["color"]))
         self.top_board_color_frame = tk.Frame(
             self, width=30, height=20, bg=self.top_board_color_var.get()
         )
@@ -98,7 +98,7 @@ class ColorPickerFrame(ttk.Frame):
         # Bottom board color
         ttk.Label(self, text="Bottom Board Color:").grid(row=4, column=2, sticky=tk.W, pady=(0, padding))
         
-        self.bottom_board_color_var = tk.StringVar(value=self.bottom_board_defaults["color"])
+        self.bottom_board_color_var = tk.StringVar(value=self._cw_color_nr_to_rgb(self.bottom_board_defaults["color"]))
         self.bottom_board_color_frame = tk.Frame(
             self, width=30, height=20, bg=self.bottom_board_color_var.get()
         )
@@ -124,12 +124,20 @@ class ColorPickerFrame(ttk.Frame):
         import cadwork
 
         color_nr = utility_controller.get_user_color(1)
-        rgb_color = visualization_controller.get_rgb_from_cadwork_color_id(color_nr)
+        hex_color = ColorPickerFrame._cw_color_nr_to_rgb(color_nr)
 
         color_var.set(color_nr) #f"{rgb_color.r}, {rgb_color.g}, {rgb_color.b}"
-        hex_color = f"#{rgb_color.r:02x}{rgb_color.g:02x}{rgb_color.b:02x}"
+
         color_frame.config(bg=hex_color)
-    
+
+    @staticmethod
+    def _cw_color_nr_to_rgb(color_nr):
+        import visualization_controller
+        import cadwork
+        rgb_color = visualization_controller.get_rgb_from_cadwork_color_id(color_nr)
+        hex_color = f"#{rgb_color.r:02x}{rgb_color.g:02x}{rgb_color.b:02x}"
+        return hex_color
+
     def get_values(self):
 
         return {
