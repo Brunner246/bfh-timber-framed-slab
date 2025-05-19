@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Beam configuration frame component.
-"""
 import tkinter as tk
 from tkinter import ttk
 import sys

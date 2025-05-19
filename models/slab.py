@@ -8,6 +8,7 @@ class Slab:
     element_id: int
     axis_start_point: cadwork.point_3d
     axis_end_point: cadwork.point_3d
+    axis_height_point: cadwork.point_3d
     slab_thickness: float
     slab_width: float
     axis_local_width_direction: cadwork.point_3d
@@ -35,6 +36,7 @@ def map_slab_data(slab_element_id: int) -> Slab:
         slab_thickness=api_wrappers.get_element_height(slab_element_id),
         axis_end_point=api_wrappers.get_element_p2(slab_element_id),
         axis_start_point=api_wrappers.get_element_p1(slab_element_id),
+        axis_height_point=api_wrappers.get_element_p3(slab_element_id),
         axis_local_thickness_direction=api_wrappers.get_element_zl(slab_element_id),
         axis_local_width_direction=api_wrappers.get_element_yl(slab_element_id)
     )

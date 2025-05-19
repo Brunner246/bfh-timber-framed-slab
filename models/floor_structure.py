@@ -15,10 +15,14 @@ class FloorStructure:
     def __init__(self, slab_element: int, config: FloorStructureConfig):
         self.slab_element_id = slab_element
         self.config = config
-        self.slab_element = map_slab_data(slab_element)
+        self._slab_element = map_slab_data(slab_element)
+
+    @property
+    def slab_element(self) -> Slab:
+        return self._slab_element
 
     def generate_beam_distribution_points(self) -> Tuple[List[cadwork.point_3d], List[cadwork.point_3d]]:
-        points_start_edge, points_end_edge = self._create_beam_distribution_points(self.slab_element,
+        points_start_edge, points_end_edge = self._create_beam_distribution_points(self._slab_element,
                                                                                    self.config.beam_config.width)
         # TODO visualize the points
         # [create_node(p) for p in [*points_end_edge, *points_start_edge]]
@@ -65,9 +69,23 @@ class FloorStructure:
 
         return points_ref_edge, points_opposite_edge
 
-    def generate_structure(self) -> bool:
-        # TODO: Implement the logic to create beams and boards
-        return False
+    def generate_structure(self, config: FloorStructureConfig) -> bool:
+        pass
+        # slab_element_id = self._filter_slab_element_id_from_elements()
+        # if slab_element_id is None:
+        #     raise ValueError("No valid slab element found.")
+        # self.floor_structure = FloorStructure(slab_element_id, config)
+        # points_start_edge, points_end_edge = self.floor_structure.generate_beam_distribution_points()
+        # structure_1_start, structure_1_end = self.floor_structure.calculate_extreme_edge_points(points_start_edge)
+        # structure_2_start, structure_2_end = self.floor_structure.calculate_extreme_edge_points(points_end_edge)
+        #
+        # self._create_beams_with_attributes(config, points_end_edge, points_start_edge,
+        #                                    structure_1_end,
+        #                                    structure_1_start, structure_2_end,
+        #                                    structure_2_start)
+        #
+        # self._create_top_panel_with_attributes(config)
+        # self._create_bottom_panel_with_attributes(config)
 
     def get_total_volume(self):
         # TODO: Calculate the total volume of the floor structure.

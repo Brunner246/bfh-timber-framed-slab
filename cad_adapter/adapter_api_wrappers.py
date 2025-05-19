@@ -11,9 +11,9 @@ def filter_slab_element_id(elements: List[int]) -> int:
     return next(filter(lambda x: ac.get_element_type(x).is_floor(), elements), None)
 
 
-def move_point(point: cadwork.point_3d, slab_element_y_vec: cadwork.point_3d,
+def move_point(point: cadwork.point_3d, direction_vector: cadwork.point_3d,
                distance: float) -> cadwork.point_3d:
-    new_point = point + slab_element_y_vec * distance
+    new_point = point + direction_vector * distance
     return new_point
     # raise NotImplementedError()
 
@@ -42,6 +42,9 @@ def get_element_p2(element_id: int) -> cadwork.point_3d:
     return gc.get_p2(element_id)
     # raise NotImplementedError()
 
+def get_element_p3(element_id: int) -> cadwork.point_3d:
+    return gc.get_p3(element_id)
+    # raise NotImplementedError()
 
 def get_element_yl(element_id: int) -> cadwork.point_3d:
     return gc.get_yl(element_id)
@@ -71,6 +74,15 @@ def create_rectangular_beam(start_point: cadwork.point_3d, end_point: cadwork.po
                                              end_point,
                                              start_point + height_axis_orientation)
     # raise NotImplementedError())
+
+def create_rectangular_panel(width: float, thickness: float, p1: cadwork.point_3d,
+                             p2: cadwork.point_3d, p3: cadwork.point_3d) -> int:
+    return ec.create_rectangular_panel_points(width,
+                                                  thickness,
+                                                  p1,
+                                                  p2,
+                                                  p3)
+    # raise NotImplementedError()
 
 def set_color(elements: List[int], color: int):
     vc.set_color(elements, color)

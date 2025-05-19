@@ -8,7 +8,7 @@ import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from models.floor_structure_config import FloorStructureConfig, BeamConfig
+from models.floor_structure_config import FloorStructureConfig, BeamConfig, PanelConfig
 from viewmodel.floor_viewmodel import FloorViewModel
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'components')))
@@ -62,29 +62,6 @@ class TimberFrameApp:
         self.style.configure("Primary.TButton", background=theme_color, foreground="white")
         self.style.configure("Header.TLabel", font=("Helvetica", 12, "bold"))
         self.style.configure("Title.TLabel", font=("Helvetica", 14, "bold"))
-
-    def _create_menu(self):
-        """Create the application menu."""
-        self.menu_bar = tk.Menu(self.root)
-
-        self._create_file_menu()
-        self._create_help_menu()
-
-        self.root.config(menu=self.menu_bar)
-
-    def _create_help_menu(self):
-        help_menu = tk.Menu(self.menu_bar, tearoff=0)
-        help_menu.add_command(label="Documentation", command=self._show_documentation)
-        help_menu.add_command(label="About", command=self._show_about)
-        self.menu_bar.add_cascade(label="Help", menu=help_menu)
-
-    def _create_file_menu(self):
-        file_menu = tk.Menu(self.menu_bar, tearoff=0)
-        file_menu.add_command(label="Import from CAD", command=lambda: print("Import from CAD"))
-        file_menu.add_command(label="Export to CAD", command=lambda: print("Export to CAD"))
-        file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.root.quit)
-        self.menu_bar.add_cascade(label="File", menu=file_menu)
 
     def _create_main_frame(self):
         """Create the main frame with configuration panels."""
@@ -179,8 +156,12 @@ class TimberFrameApp:
 
         spacing = self.beam_config.get_values()["spacing"]
         beam_config = self._setup_beam_config()
+        top_panel_config = self._setup_top_panel_config()
+        bottom_panel_config = self._setup_bottom_panel_config()
         structure_config = FloorStructureConfig(spacing=spacing,
-                                                beam_config=beam_config)
+                                                beam_config=beam_config,
+                                                top_panel_config=top_panel_config,
+                                                bottom_panel_config=bottom_panel_config)
 
         self.view_model.set_config(structure_config)
         result = self.view_model.create_structure()
@@ -198,32 +179,23 @@ class TimberFrameApp:
                           color=beam_color,
                           name=beam_name)
 
-    @staticmethod
-    def _show_documentation():
-        """Show application documentation."""
-        messagebox.showinfo(
-            "Documentation",
-            "Timber Frame Construction Application\n\n"
-            "This application allows you to create timber frame floor structures "
-            "with configurable beam dimensions and board thicknesses.\n\n"
-            "1. Import a floor element from CAD software\n"
-            "2. Configure beam dimensions and spacing\n"
-            "3. Configure top and bottom board thicknesses\n"
-            "4. Set element names and colors\n"
-            "5. Create the structure\n"
-            "6. Export the structure back to CAD software"
-        )
+    def _setup_top_panel_config(self):
+        panel_thickness = self.board_config.get_values()["top_thickness"]
+        panel_color = self.color_picker.get_values()["top_board_color"]
+        panel_name = self.color_picker.get_values()["top_board_name"]
 
-    @staticmethod
-    def _show_about():
-        """Show information about the application."""
-        messagebox.showinfo(
-            "About",
-            "Timber Frame Construction Application\n"
-            "Version 1.0\n\n"
-            "Created as a teaching tool for timber frame construction.\n"
-            "© 2025"
-        )
+        return PanelConfig(thickness=panel_thickness,
+                          color=panel_color,
+                          name=panel_name)
+
+    def _setup_bottom_panel_config(self):
+        panel_thickness = self.board_config.get_values()["bottom_thickness"]
+        panel_color = self.color_picker.get_values()["bottom_board_color"]
+        panel_name = self.color_picker.get_values()["bottom_board_name"]
+
+        return PanelConfig(thickness=panel_thickness,
+                          color=panel_color,
+                          name=panel_name)
 
     def _set_status(self, message):
         """Set the status bar message."""
