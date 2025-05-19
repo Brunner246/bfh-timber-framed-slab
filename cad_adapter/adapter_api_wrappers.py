@@ -4,11 +4,13 @@ import cadwork
 
 
 def filter_slab_element_ids(elements: List[int]) -> List[int]:
+    #TODO: filter for framed floor elements
     raise NotImplementedError()
 
 
 def move_point(point: cadwork.point_3d, direction_vector: cadwork.point_3d,
                distance: float) -> cadwork.point_3d:
+    # TODO: Implement moving a point in 3D space: new_point = point + ... ...
     raise NotImplementedError()
 
 
@@ -25,22 +27,27 @@ def get_element_height(element_id: int) -> float:
 
 
 def get_element_p1(element_id: int) -> cadwork.point_3d:
+    #TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
     raise NotImplementedError()
 
 
 def get_element_p2(element_id: int) -> cadwork.point_3d:
+    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
     raise NotImplementedError()
 
 
 def get_element_p3(element_id: int) -> cadwork.point_3d:
+    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
     raise NotImplementedError()
 
 
 def get_element_yl(element_id: int) -> cadwork.point_3d:
+    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
     raise NotImplementedError()
 
 
 def get_element_zl(element_id: int) -> cadwork.point_3d:
+    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
     raise NotImplementedError()
 
 
