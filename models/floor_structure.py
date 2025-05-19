@@ -36,6 +36,7 @@ def compute_beam_distribution_points(start_point: cadwork.point_3d, end_point: c
                                      spacing: float) -> List[cadwork.point_3d]:
     length = vector_length(start_point, end_point)
     direction = normalize_vector(start_point, end_point)
+    print(f"Direction: {direction} {__name__}")
 
     n_beams = int(length // spacing)
     positions = []
@@ -45,6 +46,12 @@ def compute_beam_distribution_points(start_point: cadwork.point_3d, end_point: c
         positions.append(pos)
 
     return positions
+
+def calculate_extreme_min_point(points: List[cadwork.point_3d]) -> cadwork.point_3d:
+    return min(points, key=lambda p: (p.x ** 2 + p.y ** 2 + p.z ** 2))
+
+def calculate_extreme_max_point(points: List[cadwork.point_3d]) -> cadwork.point_3d:
+    return max(points, key=lambda p: (p.x ** 2 + p.y ** 2 + p.z ** 2))
 
 
 class FloorStructure:
@@ -57,7 +64,6 @@ class FloorStructure:
     def generate_beam_distribution_points(self) -> Tuple[List[cadwork.point_3d], List[cadwork.point_3d]]:
         points_start_edge, points_end_edge = self._create_beam_distribution_points(self.slab_element,
                                                                                    self.config.beam_config.width)
-
         # TODO visualize the points
         # [create_node(p) for p in [*points_end_edge, *points_start_edge]]
         return points_start_edge, points_end_edge
@@ -65,8 +71,8 @@ class FloorStructure:
     @staticmethod
     def calculate_extreme_edge_points(edge_points: List[cadwork.point_3d]) -> Tuple[
         cadwork.point_3d, cadwork.point_3d]:
-        min_point = min(edge_points, key=lambda p: (p.x ** 2 + p.y ** 2 + p.z ** 2))
-        max_point = max(edge_points, key=lambda p: (p.x ** 2 + p.y ** 2 + p.z ** 2))
+        min_point = calculate_extreme_min_point(edge_points)
+        max_point = calculate_extreme_max_point(edge_points)
 
         return min_point, max_point
 
@@ -79,10 +85,7 @@ class FloorStructure:
 
     def _create_beam_distribution_points(self, slab_element: Slab, beam_width: float):
         move_vector_start_edge = slab_element.axis_local_width_direction * -1.
-        move_distance = slab_element.slab_width * .5
-
-        create_node(slab_element.axis_start_point)
-        create_node(slab_element.axis_end_point)
+        move_distance = (slab_element.slab_width * .5) - beam_width
 
         moved_start_point = move_point(slab_element.axis_start_point,
                                        move_vector_start_edge,
@@ -93,8 +96,8 @@ class FloorStructure:
 
         vector_start_to_end = normalize_vector(moved_start_point, moved_end_point)
         print(f"Vector start to end: {vector_start_to_end}")
-        moved_start_point = moved_start_point + vector_start_to_end * (beam_width * .5)
-        moved_end_point = moved_end_point - vector_start_to_end * (beam_width * .5)
+        moved_start_point: cadwork.point_3d = moved_start_point + vector_start_to_end * (beam_width * .5)
+        moved_end_point: cadwork.point_3d = moved_end_point - vector_start_to_end * (beam_width * .5)
 
         points_ref_edge = compute_beam_distribution_points(moved_start_point,
                                                            moved_end_point,
@@ -102,7 +105,7 @@ class FloorStructure:
         points_ref_edge.append(moved_end_point)  # we need to add the last point for the closing beam
         points_opposite_edge = [move_point(point,
                                            slab_element.axis_local_width_direction,
-                                           slab_element.slab_width) for point in points_ref_edge]
+                                           slab_element.slab_width - beam_width * 2) for point in points_ref_edge]
 
         return points_ref_edge, points_opposite_edge
 
