@@ -120,4 +120,5 @@ def set_subgroup(elements: List[int]):
 
 def set_endtype_start_pt(elements: List[int]):
     import endtype_controller as etc
-    etc.set_endtype_name_start(elements, "type")
+    for element in elements:
+        etc.set_endtype_name_start(element, "type")
