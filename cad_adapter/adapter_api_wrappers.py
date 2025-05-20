@@ -117,3 +117,8 @@ def set_ifc_type(elements: List[int], ifc_entity_name: str):
 def set_subgroup(elements: List[int]):
     #TODO: implement subgroup attribute
     pass
+
+def set_endtype_start_pt(elements: List[int]):
+    import endtype_controller as etc
+    for element in elements:
+        etc.set_endtype_name_start(element, "type")
