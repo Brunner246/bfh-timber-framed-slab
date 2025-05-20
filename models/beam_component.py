@@ -1,5 +1,6 @@
 from typing import List
 
+from cad_adapter.adapter_api_wrappers import set_endtype_start_pt
 from models.floor_component import FloorComponent
 from models.floor_structure_config import FloorStructureConfig
 from models.slab import Slab
@@ -81,4 +82,4 @@ class BeamComponent(FloorComponent):
 
     def apply_component_feature(self):
         """Hook... """
-        pass
+        set_endtype_start_pt(self._element_ids)
