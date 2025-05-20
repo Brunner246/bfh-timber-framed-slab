@@ -1,7 +1,7 @@
 import os
 import sys
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 
 from models.floor_structure_config import FloorStructureConfig, BeamConfig, PanelConfig
 from viewmodel.floor_viewmodel import FloorViewModel
@@ -150,6 +150,7 @@ class TimberFrameApp:
         top_panel_config = self._setup_top_panel_config()
         bottom_panel_config = self._setup_bottom_panel_config()
         structure_config = FloorStructureConfig(spacing=spacing,
+                                                name=self.color_picker.get_values()["structure_name"],
                                                 beam_config=beam_config,
                                                 top_panel_config=top_panel_config,
                                                 bottom_panel_config=bottom_panel_config)
@@ -176,8 +177,8 @@ class TimberFrameApp:
         panel_name = self.color_picker.get_values()["top_board_name"]
 
         return PanelConfig(thickness=panel_thickness,
-                          color=panel_color,
-                          name=panel_name)
+                           color=panel_color,
+                           name=panel_name)
 
     def _setup_bottom_panel_config(self):
         panel_thickness = self.board_config.get_values()["bottom_thickness"]
@@ -185,8 +186,8 @@ class TimberFrameApp:
         panel_name = self.color_picker.get_values()["bottom_board_name"]
 
         return PanelConfig(thickness=panel_thickness,
-                          color=panel_color,
-                          name=panel_name)
+                           color=panel_color,
+                           name=panel_name)
 
     def _set_status(self, message):
         """Set the status bar message."""

@@ -17,6 +17,7 @@ class PanelConfig:
 @dataclass(frozen=True, slots=True)
 class FloorStructureConfig:
     spacing: float = field(default=0)
+    name: str = field(default="Floor Structure")
     beam_config: BeamConfig = field(default_factory=BeamConfig)
     top_panel_config: PanelConfig = field(default_factory=PanelConfig)
     bottom_panel_config: PanelConfig = field(default_factory=PanelConfig)

@@ -28,8 +28,7 @@ class BeamConfigFrame(ttk.LabelFrame):
 
     def _create_description_widget(self, padding):
         description = (
-            "Beams run perpendicular to the longer side of the floor structure. "
-            "The spacing value determines the center-to-center distance between beams."
+            "Beams...."
         )
         description_label = ttk.Label(
             self,
@@ -79,12 +78,6 @@ class BeamConfigFrame(ttk.LabelFrame):
         self.beam_width_spinbox.grid(row=0, column=1, sticky=tk.W, pady=(0, padding))
 
     def get_values(self):
-        """
-        Get the current values of the beam configuration.
-        
-        Returns:
-            dict: Dictionary with beam width, height, and spacing.
-        """
         return {
             "width": self.beam_width_var.get(),
             "height": self.beam_height_var.get(),
@@ -92,14 +85,6 @@ class BeamConfigFrame(ttk.LabelFrame):
         }
 
     def set_values(self, width, height, spacing):
-        """
-        Set the values of the beam configuration.
-        
-        Args:
-            width (float): Beam width in millimeters.
-            height (float): Beam height in millimeters.
-            spacing (float): Beam spacing in millimeters.
-        """
         self.beam_width_var.set(width)
         self.beam_height_var.set(height)
         self.beam_spacing_var.set(spacing)

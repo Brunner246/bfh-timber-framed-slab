@@ -1,6 +1,6 @@
 from typing import List
 
-from cad_adapter.adapter_api_wrappers import set_endtype_start_pt
+from cad_adapter.adapter_api_wrappers import set_endtype_start_pt, create_node
 from models.floor_component import FloorComponent
 from models.floor_structure_config import FloorStructureConfig
 from models.slab import Slab
@@ -77,6 +77,8 @@ class BeamComponent(FloorComponent):
         points_opposite_edge = [move_point(point,
                                            slab_element.axis_local_width_direction,
                                            slab_element.slab_width - beam_width * 2) for point in points_ref_edge]
+
+        [create_node(pt) for pt in points_ref_edge + points_opposite_edge]
 
         return points_ref_edge, points_opposite_edge
 

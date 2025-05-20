@@ -1,6 +1,6 @@
 from typing import List
 
-from cad_adapter.adapter_api_wrappers import set_subgroup
+from cad_adapter.adapter_api_wrappers import set_subgroup, set_comment
 from .floor_structure_config import FloorStructureConfig
 from .slab import setup_slab_data, Slab
 
@@ -32,6 +32,8 @@ class FloorStructure:
             if self._created_element_ids:
                 self._set_sub_group(self._created_element_ids)
 
+            self._set_comment([self._slab_element_id])
+
             return True
         except Exception as e:
             print(f"Error generating floor structure: {e}")
@@ -46,3 +48,8 @@ class FloorStructure:
     def _set_sub_group(element_ids: List[int]):
         """Hook to set the subgroup of the elements."""
         set_subgroup(element_ids)
+
+    @staticmethod
+    def _set_comment(element_ids: List[int]):
+        """Hook to set the comment of the elements."""
+        set_comment(element_ids)

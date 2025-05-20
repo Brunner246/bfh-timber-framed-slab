@@ -6,7 +6,7 @@ from config import DEFAULT_CONFIG, UI_CONFIG
 
 class BoardConfigFrame(ttk.LabelFrame):
     def __init__(self, parent):
-        super().__init__(parent, text="Board Configuration", padding=UI_CONFIG["padding"]["default"])
+        super().__init__(parent, text="Panel Configuration", padding=UI_CONFIG["padding"]["default"])
 
         self.top_board_defaults = DEFAULT_CONFIG["top_board"]
         self.bottom_board_defaults = DEFAULT_CONFIG["bottom_board"]
@@ -19,7 +19,7 @@ class BoardConfigFrame(ttk.LabelFrame):
     def _create_widgets(self):
         padding = UI_CONFIG["padding"]["default"]
 
-        ttk.Label(self, text="Top Board Thickness (mm):").grid(row=0, column=0, sticky=tk.W, pady=(0, padding))
+        ttk.Label(self, text="Top Panel Thickness (mm):").grid(row=0, column=0, sticky=tk.W, pady=(0, padding))
 
         self._create_top_plate_widget(padding)
         self._create_bottom_plate_widget(padding)
@@ -31,8 +31,7 @@ class BoardConfigFrame(ttk.LabelFrame):
 
     def _crate_description_widget(self, padding):
         description = (
-            "Boards represent the top and bottom planking of the floor structure. "
-            "The boards follow the exact perimeter of the imported floor element."
+            "Panel..."
         )
         description_label = ttk.Label(
             self,
