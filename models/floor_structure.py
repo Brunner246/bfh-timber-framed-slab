@@ -32,7 +32,7 @@ class FloorStructure:
             if self._created_element_ids:
                 self._set_sub_group(self._created_element_ids)
 
-            self._set_comment([self._slab_element_id])
+            self._set_comment([self._slab_element_id], config.name)
 
             return True
         except Exception as e:
@@ -50,6 +50,6 @@ class FloorStructure:
         set_subgroup(element_ids)
 
     @staticmethod
-    def _set_comment(element_ids: List[int]):
+    def _set_comment(element_ids: List[int], comment: str):
         """Hook to set the comment of the elements."""
-        set_comment(element_ids)
+        set_comment(element_ids, comment)

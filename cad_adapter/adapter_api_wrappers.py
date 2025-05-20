@@ -1,61 +1,67 @@
 from typing import List
 
+import attribute_controller as ac
 import cadwork
+import element_controller as ec
+import geometry_controller as gc
+import visualization_controller as vc
 
 
 def filter_slab_element_ids(elements: List[int]) -> List[int]:
-    # TODO: filter for framed floor elements
-    pass
+    # raise NotImplementedError()
+    return list(filter(lambda x: ac.get_element_type(x).is_floor(), elements))
 
 
 def move_point(point: cadwork.point_3d, direction_vector: cadwork.point_3d,
                distance: float) -> cadwork.point_3d:
-    # TODO: Implement moving a point in 3D space: new_point = point + ... ...
-    pass
+    new_point = point + (direction_vector * distance)
+    return new_point
+    # raise NotImplementedError()
 
 
 def get_active_elements() -> List[int]:
-    pass
+    return ec.get_active_identifiable_element_ids()
+    # raise NotImplementedError()
 
 
 def get_element_width(element_id: int) -> float:
-    pass
+    return gc.get_width(element_id)
+    # raise NotImplementedError()
 
 
 def get_element_height(element_id: int) -> float:
-    pass
+    return gc.get_height(element_id)
+    # raise NotImplementedError()
 
 
 def get_element_p1(element_id: int) -> cadwork.point_3d:
-    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
-    pass
+    return gc.get_p1(element_id)
+    # raise NotImplementedError()
 
 
 def get_element_p2(element_id: int) -> cadwork.point_3d:
-    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
-    pass
+    return gc.get_p2(element_id)
+    # raise NotImplementedError()
 
 
 def get_element_p3(element_id: int) -> cadwork.point_3d:
-    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
-    pass
+    return gc.get_p3(element_id)
+    # raise NotImplementedError()
 
 
 def get_element_yl(element_id: int) -> cadwork.point_3d:
-    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
-    pass
+    return gc.get_yl(element_id)
+    # raise NotImplementedError()
 
 
 def get_element_zl(element_id: int) -> cadwork.point_3d:
-    # TODO: https://docs.cadwork.com/projects/cwapi3dpython/en/latest/examples/geometry/
-    pass
+    return gc.get_zl(element_id)
+    # raise NotImplementedError()
 
 
 def create_node(point: cadwork.point_3d) -> int:
-    # TODO: create nodes to see start end point of beams
-    condition: bool = True
-    # TODO: ...
-    pass
+    return ec.create_node(point)
+    # raise NotImplementedError()
 
 
 def create_rectangular_beam(start_point: cadwork.point_3d, end_point: cadwork.point_3d, width: float,
@@ -64,20 +70,32 @@ def create_rectangular_beam(start_point: cadwork.point_3d, end_point: cadwork.po
                             ) -> int:
     # TODO: implement creation of beam. p3 is e.g. start point + direction
 
-    pass
+    return ec.create_rectangular_beam_points(width,
+                                             height,
+                                             start_point,
+                                             end_point,
+                                             start_point + height_axis_orientation)
+    # raise NotImplementedError())
 
 
 def create_rectangular_panel(width: float, thickness: float, p1: cadwork.point_3d,
                              p2: cadwork.point_3d, p3: cadwork.point_3d) -> int:
-    pass
+    return ec.create_rectangular_panel_points(width,
+                                              thickness,
+                                              p1,
+                                              p2,
+                                              p3)
+    # raise NotImplementedError()
 
 
 def set_color(elements: List[int], color: int):
-    pass
+    vc.set_color(elements, color)
+    # raise NotImplementedError()
 
 
 def set_name(elements: List[int], name: str):
-    pass
+    ac.set_name(elements, name)
+    # raise NotImplementedError()
 
 
 def set_ifc_type(elements: List[int], ifc_entity_name: str):
@@ -93,17 +111,18 @@ def set_ifc_type(elements: List[int], ifc_entity_name: str):
 
     # bc.set_ifc2x3_element_type(elements, ifc_type)
 
+    return
+
 
 def set_subgroup(elements: List[int]):
-    # TODO: implement subgroup attribute
-    pass
-
-
-def set_comment(elements: List[int]):
-    # TODO: implement comment attribute
-    pass
+    ac.set_subgroup(elements, "Test")
 
 
 def set_endtype_start_pt(elements: List[int]):
-    # TODO: implement endtype start point for each element
-    pass
+    import endtype_controller as etc
+    for element in elements:
+        etc.set_endtype_name_start(element, "type")
+
+
+def set_comment(elements: List[int], comment: str):
+    ac.set_comment(elements, comment)
