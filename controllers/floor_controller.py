@@ -2,7 +2,7 @@ from cad_adapter.adapter_api_wrappers import get_active_elements, filter_slab_el
 from models.beam_component import BeamComponent
 from models.floor_structure import FloorStructure
 from models.floor_structure_config import FloorStructureConfig
-from models.panel_component import PanelComponent
+from models.panel_component import TopPanelComponent, BottomPanelComponent
 
 
 class FloorController:
@@ -26,18 +26,14 @@ class FloorController:
                     height=config.beam_config.height
                 )
 
-                top_panel = PanelComponent(
+                top_panel = TopPanelComponent(
                     name=config.top_panel_config.name,
-                    color=config.top_panel_config.color,
-                    thickness=config.top_panel_config.thickness,
-                    is_top=True
+                    color=config.top_panel_config.color
                 )
 
-                bottom_panel = PanelComponent(
+                bottom_panel = BottomPanelComponent(
                     name=config.bottom_panel_config.name,
-                    color=config.bottom_panel_config.color,
-                    thickness=config.bottom_panel_config.thickness,
-                    is_top=False
+                    color=config.bottom_panel_config.color
                 )
 
                 floor_structure.add_component(beam_component)

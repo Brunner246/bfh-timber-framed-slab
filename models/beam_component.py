@@ -1,6 +1,8 @@
 from typing import List
 
 from models.floor_component import FloorComponent
+from models.floor_structure_config import FloorStructureConfig
+from models.slab import Slab
 
 
 class BeamComponent(FloorComponent):
@@ -10,7 +12,7 @@ class BeamComponent(FloorComponent):
         self.height = height
         self._ifc_type = "IfcMember"
 
-    def create(self, slab_element, config) -> List[int]:
+    def create(self, slab_element: Slab, config: FloorStructureConfig) -> List[int]:
         from cad_adapter.adapter_api_wrappers import create_rectangular_beam, get_element_zl, move_point
         from .beam_geometry import calculate_primary_beam_points
 
@@ -76,3 +78,7 @@ class BeamComponent(FloorComponent):
                                            slab_element.slab_width - beam_width * 2) for point in points_ref_edge]
 
         return points_ref_edge, points_opposite_edge
+
+    def apply_component_feature(self):
+        """Hook... """
+        pass

@@ -3,6 +3,9 @@ from typing import List, Optional
 
 import cadwork
 
+from models.floor_structure_config import FloorStructureConfig
+from models.slab import Slab
+
 
 class FloorComponent(ABC):
     def __init__(self, name: str, color: int):
@@ -12,7 +15,7 @@ class FloorComponent(ABC):
         self._ifc_type: Optional[str] = None
 
     @abstractmethod
-    def create(self, slab_element, config) -> List[int]:
+    def create(self, slab_element: Slab, config: FloorStructureConfig) -> List[int]:
         """Create the component and return element IDs"""
         pass
 
@@ -27,3 +30,10 @@ class FloorComponent(ABC):
 
         if self._ifc_type:
             set_ifc_type(self._element_ids, self._ifc_type)
+
+        self.apply_component_feature()
+
+
+    def apply_component_feature(self):
+        """Hook... """
+        pass
